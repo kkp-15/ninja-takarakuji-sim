@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="ja">
+<!DOCTYPE html><html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,26 +28,25 @@
     button:hover {
       background-color: #e0b030;
     }
-    #result, #summary, #adStatus {
+    #result, #summary, #adStatus, #message {
       margin-top: 20px;
       white-space: pre-line;
+    }
+    #message {
+      color: red;
+      font-weight: bold;
     }
     @media screen and (max-width: 600px) {
       button {
         width: 80%;
       }
     }
-  </style>
-
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
-  <script>
+  </style>  <!-- Google Analytics -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-2LM85GJN0L');
-  </script>
-</head>
+  </script></head>
 <body>
   <h1>宝くじで億万長者シミュレーター</h1>
   <p>所持金：<span id="money">50000</span>円</p>
@@ -56,13 +54,12 @@
   <button onclick="drawLottery(10)">10枚引く</button>
   <button onclick="drawLottery(100)">100枚引く</button>
   <button onclick="resetAll()">リセット</button>
+  <div id="message"></div>
   <div id="result"></div>
   <div id="summary"></div>
   <hr>
   <button id="watchAdBtn">📺 広告を見て +1,000円</button>
-  <div id="adStatus"></div>
-
-  <script>
+  <div id="adStatus"></div>  <script>
     let money = 50000;
     let totalSpent = 0;
     let totalWon = 0;
@@ -79,11 +76,13 @@
     };
 
     function drawLottery(times) {
+      const message = document.getElementById("message");
       if (money < times * 300) {
-        alert('所持金が足りません！');
+        message.textContent = '⚠️ 所持金が足りません！';
         return;
+      } else {
+        message.textContent = '';
       }
-      let message = '';
       money -= times * 300;
       totalSpent += times * 300;
       for (let i = 0; i < times; i++) {
@@ -120,6 +119,7 @@
       for (let key in stats) stats[key] = 0;
       updateDisplay();
       document.getElementById("adStatus").textContent = '';
+      document.getElementById("message").textContent = '';
     }
 
     document.getElementById("watchAdBtn").addEventListener("click", function () {
@@ -145,6 +145,5 @@
         btn.disabled = false;
       }, 5000);
     });
-  </script>
-</body>
+  </script></body>
 </html>
