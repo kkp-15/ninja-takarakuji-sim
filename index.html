@@ -35,14 +35,19 @@
       color: white;
       cursor: pointer;
     }
+    button:disabled {
+      background-color: #ccc;
+      cursor: wait;
+    }
     #result {
       margin-top: 20px;
       font-size: 1.3rem;
     }
     .ad-msg {
-      font-size: 0.9rem;
-      color: #999;
-      margin-top: 10px;
+      font-size: 1rem;
+      color: #444;
+      margin-top: 15px;
+      line-height: 1.6;
     }
     #share {
       margin-top: 30px;
@@ -70,6 +75,7 @@
   <h1>宝くじで億万長者シミュレーター</h1>
   <div id="money">所持金：10,000円</div>
   <button onclick="buyLottery()">宝くじを買う（1,000円）</button>
+  <button onclick="watchAd()" id="adBtn">広告を見る（無料）</button>
   <div id="result"></div>
   <div class="ad-msg" id="ad"></div>
 
@@ -83,6 +89,7 @@
     const resultDisplay = document.getElementById("result");
     const adDisplay = document.getElementById("ad");
     const tweetBtn = document.getElementById("tweetBtn");
+    const adBtn = document.getElementById("adBtn");
 
     function buyLottery() {
       if (money < 1000) {
@@ -121,13 +128,34 @@
       resultDisplay.textContent = result;
       moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
 
-      // 広告風メッセージ（ジョーク）
-      const adSeconds = Math.floor(Math.random() * 10) + 1;
-      adDisplay.textContent = `🌀 広告を見て ${adSeconds}秒が溶けました`;
-
-      // X（旧Twitter）共有リンク更新
       const tweetText = encodeURIComponent(`【宝くじシミュレーター🎯】\n${result}\n現在の所持金：${money.toLocaleString()}円\n#宝くじシミュレーター`);
       tweetBtn.href = `https://twitter.com/intent/tweet?text=${tweetText}&url=https://kkp-15.github.io/ninja-takarakuji-sim/`;
+    }
+
+    function watchAd() {
+      adBtn.disabled = true;
+      adBtn.textContent = "広告再生中…";
+
+      const wait = Math.floor(Math.random() * 3) + 1; // 1〜3秒
+      const bonus = Math.floor(Math.random() * 5 + 1) * 100; // 100〜500円
+      const messages = [
+        "💡気づいたら夕方になってた",
+        "🫠何も得られなかった…はずだった",
+        "📺興味のないCMを3回見た気分",
+        "⏳あなたの時間は戻ってこない",
+        "🤡“無料”は時間で支払うって知ってた？",
+        "💥でもまた見たくなる不思議",
+        "😂実は…ちょっと得した"
+      ];
+
+      setTimeout(() => {
+        money += bonus;
+        const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+        adDisplay.innerHTML = `🌀 広告を見て ${wait}秒が溶けました<br>💰 ${bonus.toLocaleString()}円もらえた！<br>${randomMsg}`;
+        moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
+        adBtn.disabled = false;
+        adBtn.textContent = "広告を見る（無料）";
+      }, wait * 1000);
     }
   </script>
 </body>
