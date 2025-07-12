@@ -41,7 +41,8 @@
     }
     #result {
       margin-top: 20px;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
+      white-space: pre-wrap;
     }
     .ad-msg {
       font-size: 1rem;
@@ -74,8 +75,14 @@
 <body>
   <h1>宝くじで億万長者シミュレーター</h1>
   <div id="money">所持金：10,000円</div>
-  <button onclick="buyLottery()">宝くじを買う（1,000円）</button>
+
+  <p>何枚買う？</p>
+  <button onclick="buyLottery(1)">1枚（1,000円）</button>
+  <button onclick="buyLottery(5)">5枚（5,000円）</button>
+  <button onclick="buyLottery(10)">10枚（10,000円）</button>
+
   <button onclick="watchAd()" id="adBtn">広告を見る（無料）</button>
+
   <div id="result"></div>
   <div class="ad-msg" id="ad"></div>
 
@@ -85,50 +92,58 @@
 
   <script>
     let money = 10000;
+    let totalSpent = 0;
+    let totalWon = 0;
+
     const moneyDisplay = document.getElementById("money");
     const resultDisplay = document.getElementById("result");
     const adDisplay = document.getElementById("ad");
     const tweetBtn = document.getElementById("tweetBtn");
     const adBtn = document.getElementById("adBtn");
 
-    function buyLottery() {
-      if (money < 1000) {
+    function buyLottery(count) {
+      const cost = count * 1000;
+      if (money < cost) {
         resultDisplay.textContent = "所持金が足りません。";
         return;
       }
 
-      money -= 1000;
-      moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
+      money -= cost;
+      totalSpent += cost;
+      let resultText = `🎟 宝くじ ${count}枚購入！\n`;
+      let sessionWin = 0;
 
-      const rand = Math.random();
-      let result;
-      let amount = 0;
+      for (let i = 0; i < count; i++) {
+        const rand = Math.random();
+        let prize = 0;
+        if (rand < 0.000001) prize = 1000000000;
+        else if (rand < 0.0001) prize = 10000000;
+        else if (rand < 0.001) prize = 1000000;
+        else if (rand < 0.01) prize = 10000;
+        else if (rand < 0.05) prize = 3000;
 
-      if (rand < 0.000001) {
-        result = "🎉 1等！10億円当選！！";
-        amount = 1000000000;
-      } else if (rand < 0.0001) {
-        result = "✨ 2等！1,000万円当選！";
-        amount = 10000000;
-      } else if (rand < 0.001) {
-        result = "🥈 3等！100万円当選！";
-        amount = 1000000;
-      } else if (rand < 0.01) {
-        result = "🎊 4等！1万円当選！";
-        amount = 10000;
-      } else if (rand < 0.05) {
-        result = "😊 5等！3,000円当選！";
-        amount = 3000;
-      } else {
-        result = "😢 ハズレ…また挑戦して！";
-        amount = 0;
+        if (prize > 0) {
+          resultText += `🎉 ${i + 1}枚目：${prize.toLocaleString()}円当選！\n`;
+        } else {
+          resultText += `😢 ${i + 1}枚目：ハズレ\n`;
+        }
+
+        sessionWin += prize;
       }
 
-      money += amount;
-      resultDisplay.textContent = result;
+      money += sessionWin;
+      totalWon += sessionWin;
+
+      const profit = sessionWin - cost;
+      const totalProfit = totalWon - totalSpent;
+
+      resultText += `\n💰 今回の損益：${profit >= 0 ? '+' : ''}${profit.toLocaleString()}円`;
+      resultText += `\n📊 累計損益：${totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString()}円`;
+
+      resultDisplay.textContent = resultText;
       moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
 
-      const tweetText = encodeURIComponent(`【宝くじシミュレーター🎯】\n${result}\n現在の所持金：${money.toLocaleString()}円\n#宝くじシミュレーター`);
+      const tweetText = encodeURIComponent(`【宝くじシミュレーター🎯】\n${resultText}\n#宝くじシミュレーター`);
       tweetBtn.href = `https://twitter.com/intent/tweet?text=${tweetText}&url=https://kkp-15.github.io/ninja-takarakuji-sim/`;
     }
 
@@ -136,16 +151,19 @@
       adBtn.disabled = true;
       adBtn.textContent = "広告再生中…";
 
-      const wait = Math.floor(Math.random() * 3) + 1; // 1〜3秒
-      const bonus = Math.floor(Math.random() * 5 + 1) * 100; // 100〜500円
+      const wait = Math.floor(Math.random() * 3) + 1;
+      const bonus = Math.floor(Math.random() * 5 + 1) * 100;
       const messages = [
-        "💡気づいたら夕方になってた",
-        "🫠何も得られなかった…はずだった",
-        "📺興味のないCMを3回見た気分",
-        "⏳あなたの時間は戻ってこない",
-        "🤡“無料”は時間で支払うって知ってた？",
-        "💥でもまた見たくなる不思議",
-        "😂実は…ちょっと得した"
+        "⌛使った時間は戻らない…でも広告は何度も出てくる。",
+        "😇あなたの5秒、他人の利益になりました。",
+        "💭“時間はお金より大切”って誰かが言ってたような。",
+        "📺この広告、人生で何回見たか覚えてますか？",
+        "🌀何も得なかった…はずなのに、なぜかまた押してしまう。",
+        "⏳今の数秒で、夢は少し遠のいたかも。",
+        "🤖気づけば指が勝手に…時間が溶けるとはこのことか。",
+        "🥲“無駄な時間”の定義が少しわかった気がする。",
+        "📉秒単位で人生を浪費していく感覚、クセになりそう。",
+        "💸お金は増えたけど、君の人生残り時間は減ったぞ。"
       ];
 
       setTimeout(() => {
