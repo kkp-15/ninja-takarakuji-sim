@@ -28,7 +28,15 @@
     button:hover {
       background-color: #e0b030;
     }
-    #result, #summary, #adStatus, #message, #probabilities {
+    input {
+      font-size: 18px;
+      padding: 8px;
+      width: 200px;
+      margin: 10px auto;
+      display: block;
+      text-align: center;
+    }
+    #result, #summary, #adStatus, #message, #probabilities, #shareButton {
       margin-top: 20px;
       white-space: pre-line;
     }
@@ -36,36 +44,46 @@
       color: red;
       font-weight: bold;
     }
+    #followButton {
+      margin-top: 40px;
+    }
     @media screen and (max-width: 600px) {
-      button {
+      button, input {
         width: 80%;
       }
     }
-  </style>  <!-- Google Analytics -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>  <script>
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-2LM85GJN0L');
-  </script></head>
+  </script>
+</head>
 <body>
   <h1>宝くじで億万長者シミュレーター</h1>
-  <p>所持金：<span id="money">50000</span>円</p>
-  <button onclick="drawLottery(1)">1枚引く</button>
-  <button onclick="drawLottery(10)">10枚引く</button>
-  <button onclick="drawLottery(100)">100枚引く</button>
+  <p>所持金：<span id="money">1000000</span>円（上限：1,000,000円）</p>
+  <input id="ticketInput" type="number" placeholder="くじの枚数（1枚300円）" min="1">
+  <button onclick="drawLottery()">くじを引く（1回のみ）</button>
   <button onclick="resetAll()">リセット</button>
   <div id="message"></div>
   <div id="result"></div>
   <div id="summary"></div>
   <div id="probabilities"></div>
-  <hr>
-  <button id="watchAdBtn">📺 広告を見て +1,000円</button>
+  <div id="shareButton" style="display:none">
+    <button onclick="shareOnX()">📤 結果をXでシェア</button>
+  </div>
   <div id="adStatus"></div>
-  <hr>
-  <button onclick="shareOnX()">📤 結果をXでシェア</button>  <script>
-    let money = 50000;
+  <div id="followButton">
+    <a href="https://twitter.com/kkp_webninja" target="_blank">
+      <button>🥷 私（@kkp_webninja）をフォロー</button>
+    </a>
+  </div>  <script>
+    let money = 1000000;
     let totalSpent = 0;
     let totalWon = 0;
+    let hasPlayed = false;
     let stats = {
       "1等": 0,
       "前後賞": 0,
@@ -90,17 +108,34 @@
       "ハズレ": "残り全部"
     };
 
-    function drawLottery(times) {
+    function drawLottery() {
+      const input = document.getElementById("ticketInput");
       const message = document.getElementById("message");
-      if (money < times * 300) {
+      const share = document.getElementById("shareButton");
+
+      if (hasPlayed) {
+        message.textContent = '⚠️ もう一度プレイするにはリセットしてください。';
+        return;
+      }
+
+      const count = parseInt(input.value);
+      if (!count || count <= 0) {
+        message.textContent = '⚠️ 正しい枚数を入力してください。';
+        return;
+      }
+
+      const cost = count * 300;
+      if (money < cost) {
         message.textContent = '⚠️ 所持金が足りません！';
         return;
-      } else {
-        message.textContent = '';
       }
-      money -= times * 300;
-      totalSpent += times * 300;
-      for (let i = 0; i < times; i++) {
+
+      hasPlayed = true;
+      message.textContent = '';
+      money -= cost;
+      totalSpent += cost;
+
+      for (let i = 0; i < count; i++) {
         const num = Math.floor(Math.random() * 10000000);
         if (num === 0) { stats["1等"]++; totalWon += 500000000; }
         else if (num === 1 || num === 2) { stats["前後賞"]++; totalWon += 100000000; }
@@ -113,6 +148,7 @@
         else { stats["ハズレ"]++; }
       }
       updateDisplay();
+      share.style.display = 'block';
     }
 
     function updateDisplay() {
@@ -134,38 +170,17 @@
     }
 
     function resetAll() {
-      money = 50000;
+      money = 1000000;
       totalSpent = 0;
       totalWon = 0;
+      hasPlayed = false;
       for (let key in stats) stats[key] = 0;
       updateDisplay();
       document.getElementById("adStatus").textContent = '';
       document.getElementById("message").textContent = '';
+      document.getElementById("ticketInput").value = '';
+      document.getElementById("shareButton").style.display = 'none';
     }
-
-    document.getElementById("watchAdBtn").addEventListener("click", function () {
-      const btn = this;
-      btn.disabled = true;
-      const adStatus = document.getElementById("adStatus");
-      adStatus.textContent = "📺 動画を再生中…（5秒）";
-
-      const comments = [
-        "あなたの時間が5秒溶けました。",
-        "その5秒で筋トレできたのに…",
-        "お金は増えた。時間は戻らない。",
-        "スポンサー（幻）から寄付が届きました。",
-        "あと15回で焼肉1回分かも。",
-        "あなたの人生の5秒が失われました。"
-      ];
-
-      setTimeout(() => {
-        money += 1000;
-        updateDisplay();
-        const comment = comments[Math.floor(Math.random() * comments.length)];
-        adStatus.textContent = `🎉 所持金+1,000円！\n⌛ ${comment}`;
-        btn.disabled = false;
-      }, 5000);
-    });
 
     function shareOnX() {
       const url = encodeURIComponent(location.href);
