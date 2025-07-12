@@ -28,13 +28,9 @@
     button:hover {
       background-color: #e0b030;
     }
-    input {
-      font-size: 18px;
-      padding: 8px;
-      width: 200px;
+    input[type="range"] {
+      width: 80%;
       margin: 10px auto;
-      display: block;
-      text-align: center;
     }
     #result, #summary, #adStatus, #message, #probabilities, #shareButton, #costDisplay {
       margin-top: 20px;
@@ -47,11 +43,6 @@
     #followButton {
       margin-top: 40px;
     }
-    @media screen and (max-width: 600px) {
-      button, input {
-        width: 80%;
-      }
-    }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
   <script>
@@ -63,9 +54,10 @@
 </head>
 <body>
   <h1>宝くじで億万長者シミュレーター</h1>
-  <p>所持金：<span id="money">1000000</span>円（上限：1,000,000円）</p>
-  <input id="ticketInput" type="number" placeholder="くじの枚数（1枚300円）" min="1">
-  <div id="costDisplay"></div>
+  <p>所持金：<span id="money">1000000</span>円（上限：1,000,000円／最大3333枚まで購入可）</p>
+  <label for="ticketInput">くじの枚数（1枚300円）</label>
+  <input id="ticketInput" type="range" min="1" max="3333" value="1">
+  <div id="costDisplay">購入金額：300円（1枚）</div>
   <button onclick="drawLottery()">くじを引く（1回のみ）</button>
   <button onclick="resetAll()">リセット</button>
   <div id="message"></div>
@@ -175,9 +167,9 @@
       updateDisplay();
       document.getElementById("adStatus").textContent = '';
       document.getElementById("message").textContent = '';
-      document.getElementById("ticketInput").value = '';
+      document.getElementById("ticketInput").value = 1;
       document.getElementById("shareButton").style.display = 'none';
-      document.getElementById("costDisplay").textContent = '';
+      document.getElementById("costDisplay").textContent = '購入金額：300円（1枚）';
     }
 
     function shareOnX() {
@@ -201,7 +193,7 @@
       const count = parseInt(document.getElementById("ticketInput").value);
       const costDisplay = document.getElementById("costDisplay");
       if (!isNaN(count) && count > 0) {
-        costDisplay.textContent = `購入金額：${count * 300}円`;
+        costDisplay.textContent = `購入金額：${count * 300}円（${count}枚）`;
       } else {
         costDisplay.textContent = '';
       }
