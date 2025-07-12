@@ -59,7 +59,9 @@
   <div id="summary"></div>
   <hr>
   <button id="watchAdBtn">📺 広告を見て +1,000円</button>
-  <div id="adStatus"></div>  <script>
+  <div id="adStatus"></div>
+  <hr>
+  <button onclick="shareOnX()">📤 結果をXでシェア</button>  <script>
     let money = 50000;
     let totalSpent = 0;
     let totalWon = 0;
@@ -145,5 +147,13 @@
         btn.disabled = false;
       }, 5000);
     });
+
+    function shareOnX() {
+      const url = encodeURIComponent(location.href);
+      const total = `購入金額：${totalSpent}円、当選金額：${totalWon}円、損益：${totalWon - totalSpent}円`;
+      const text = encodeURIComponent(`宝くじで億万長者シミュレーターの結果🎯\n${total}\nあなたも運試ししてみてね👇`);
+      const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=宝くじシミュレーター`;
+      window.open(shareUrl, '_blank');
+    }
   </script></body>
 </html>
