@@ -1,159 +1,134 @@
-<!DOCTYPE html><html lang="ja">
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>宝くじで億万長者シミュレーター</title>
-  <meta property="og:title" content="宝くじで億万長者シミュレーター">
-  <meta property="og:description" content="夢の5億円…現実はハズレの連続！？あなたも運試し！">
+  <meta name="description" content="スマホで宝くじ気分！億万長者になれるか？">
+  <meta property="og:title" content="宝くじで億万長者シミュレーター" />
+  <meta property="og:description" content="所持金が減るリアル感！あなたの運命を試そう。" />
+  <meta property="og:image" content="https://kkp-15.github.io/ninja-takarakuji-sim/images/ogp.png" />
+  <meta property="og:url" content="https://kkp-15.github.io/ninja-takarakuji-sim/" />
+  <meta name="twitter:card" content="summary_large_image" />
   <style>
     body {
       font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
-      background: #fff8f0;
-      color: #444;
-      padding: 20px;
+      background: #fff8e1;
       text-align: center;
+      padding: 20px;
     }
     h1 {
-      color: #b22222;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+    #money {
+      font-size: 1.5rem;
+      margin: 10px 0;
     }
     button {
-      font-size: 18px;
-      margin: 8px;
-      padding: 12px 24px;
+      padding: 15px 25px;
+      font-size: 1.2rem;
+      margin: 10px;
       border: none;
       border-radius: 8px;
-      background-color: #f0c040;
+      background-color: #ff9800;
+      color: white;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #e0b030;
-    }
-    #result, #summary, #adStatus, #message {
+    #result {
       margin-top: 20px;
-      white-space: pre-line;
+      font-size: 1.3rem;
     }
-    #message {
-      color: red;
-      font-weight: bold;
+    .ad-msg {
+      font-size: 0.9rem;
+      color: #999;
+      margin-top: 10px;
     }
-    @media screen and (max-width: 600px) {
-      button {
-        width: 80%;
-      }
+    #share {
+      margin-top: 30px;
     }
-  </style>  <!-- Google Analytics -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>  <script>
+    #share a {
+      text-decoration: none;
+      color: white;
+      background: #1da1f2;
+      padding: 10px 20px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+  </style>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
+  <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-2LM85GJN0L');
-  </script></head>
+  </script>
+</head>
 <body>
   <h1>宝くじで億万長者シミュレーター</h1>
-  <p>所持金：<span id="money">50000</span>円</p>
-  <button onclick="drawLottery(1)">1枚引く</button>
-  <button onclick="drawLottery(10)">10枚引く</button>
-  <button onclick="drawLottery(100)">100枚引く</button>
-  <button onclick="resetAll()">リセット</button>
-  <div id="message"></div>
+  <div id="money">所持金：10,000円</div>
+  <button onclick="buyLottery()">宝くじを買う（1,000円）</button>
   <div id="result"></div>
-  <div id="summary"></div>
-  <hr>
-  <button id="watchAdBtn">📺 広告を見て +1,000円</button>
-  <div id="adStatus"></div>
-  <hr>
-  <button onclick="shareOnX()">📤 結果をXでシェア</button>  <script>
-    let money = 50000;
-    let totalSpent = 0;
-    let totalWon = 0;
-    let stats = {
-      "1等": 0,
-      "前後賞": 0,
-      "組違い賞": 0,
-      "2等": 0,
-      "3等": 0,
-      "4等": 0,
-      "5等": 0,
-      "6等": 0,
-      "ハズレ": 0
-    };
+  <div class="ad-msg" id="ad"></div>
 
-    function drawLottery(times) {
-      const message = document.getElementById("message");
-      if (money < times * 300) {
-        message.textContent = '⚠️ 所持金が足りません！';
+  <div id="share">
+    <a href="#" id="tweetBtn" target="_blank">結果をXでシェアする</a>
+  </div>
+
+  <script>
+    let money = 10000;
+    const moneyDisplay = document.getElementById("money");
+    const resultDisplay = document.getElementById("result");
+    const adDisplay = document.getElementById("ad");
+    const tweetBtn = document.getElementById("tweetBtn");
+
+    function buyLottery() {
+      if (money < 1000) {
+        resultDisplay.textContent = "所持金が足りません。";
         return;
+      }
+
+      money -= 1000;
+      moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
+
+      const rand = Math.random();
+      let result;
+      let amount = 0;
+
+      if (rand < 0.000001) {
+        result = "🎉 1等！10億円当選！！";
+        amount = 1000000000;
+      } else if (rand < 0.0001) {
+        result = "✨ 2等！1,000万円当選！";
+        amount = 10000000;
+      } else if (rand < 0.001) {
+        result = "🥈 3等！100万円当選！";
+        amount = 1000000;
+      } else if (rand < 0.01) {
+        result = "🎊 4等！1万円当選！";
+        amount = 10000;
+      } else if (rand < 0.05) {
+        result = "😊 5等！3,000円当選！";
+        amount = 3000;
       } else {
-        message.textContent = '';
+        result = "😢 ハズレ…また挑戦して！";
+        amount = 0;
       }
-      money -= times * 300;
-      totalSpent += times * 300;
-      for (let i = 0; i < times; i++) {
-        const num = Math.floor(Math.random() * 10000000);
-        if (num === 0) { stats["1等"]++; totalWon += 500000000; }
-        else if (num === 1 || num === 2) { stats["前後賞"]++; totalWon += 100000000; }
-        else if (num < 102) { stats["組違い賞"]++; totalWon += 100000; }
-        else if (num < 107) { stats["2等"]++; totalWon += 10000000; }
-        else if (num < 207) { stats["3等"]++; totalWon += 1000000; }
-        else if (num < 10207) { stats["4等"]++; totalWon += 10000; }
-        else if (num < 102207) { stats["5等"]++; totalWon += 3000; }
-        else if (num < 1102207) { stats["6等"]++; totalWon += 300; }
-        else { stats["ハズレ"]++; }
-      }
-      updateDisplay();
+
+      money += amount;
+      resultDisplay.textContent = result;
+      moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
+
+      // 広告風メッセージ（ジョーク）
+      const adSeconds = Math.floor(Math.random() * 10) + 1;
+      adDisplay.textContent = `🌀 広告を見て ${adSeconds}秒が溶けました`;
+
+      // X（旧Twitter）共有リンク更新
+      const tweetText = encodeURIComponent(`【宝くじシミュレーター🎯】\n${result}\n現在の所持金：${money.toLocaleString()}円\n#宝くじシミュレーター`);
+      tweetBtn.href = `https://twitter.com/intent/tweet?text=${tweetText}&url=https://kkp-15.github.io/ninja-takarakuji-sim/`;
     }
-
-    function updateDisplay() {
-      document.getElementById("money").textContent = money;
-      let result = '';
-      for (let key in stats) {
-        if (stats[key] > 0) {
-          result += `${key}：${stats[key]}回\n`;
-        }
-      }
-      document.getElementById("result").textContent = result || 'まだ何も当たっていません';
-      document.getElementById("summary").textContent = `購入金額：${totalSpent}円\n当選金額：${totalWon}円\n損益：${totalWon - totalSpent}円`;
-    }
-
-    function resetAll() {
-      money = 50000;
-      totalSpent = 0;
-      totalWon = 0;
-      for (let key in stats) stats[key] = 0;
-      updateDisplay();
-      document.getElementById("adStatus").textContent = '';
-      document.getElementById("message").textContent = '';
-    }
-
-    document.getElementById("watchAdBtn").addEventListener("click", function () {
-      const btn = this;
-      btn.disabled = true;
-      const adStatus = document.getElementById("adStatus");
-      adStatus.textContent = "📺 動画を再生中…（5秒）";
-
-      const comments = [
-        "あなたの時間が5秒溶けました。",
-        "その5秒で筋トレできたのに…",
-        "お金は増えた。時間は戻らない。",
-        "スポンサー（幻）から寄付が届きました。",
-        "あと15回で焼肉1回分かも。",
-        "あなたの人生の5秒が失われました。"
-      ];
-
-      setTimeout(() => {
-        money += 1000;
-        updateDisplay();
-        const comment = comments[Math.floor(Math.random() * comments.length)];
-        adStatus.textContent = `🎉 所持金+1,000円！\n⌛ ${comment}`;
-        btn.disabled = false;
-      }, 5000);
-    });
-
-    function shareOnX() {
-      const url = encodeURIComponent(location.href);
-      const total = `購入金額：${totalSpent}円、当選金額：${totalWon}円、損益：${totalWon - totalSpent}円`;
-      const text = encodeURIComponent(`宝くじで億万長者シミュレーターの結果🎯\n${total}\nあなたも運試ししてみてね👇`);
-      const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=宝くじシミュレーター`;
-      window.open(shareUrl, '_blank');
-    }
-  </script></body>
+  </script>
+</body>
 </html>
