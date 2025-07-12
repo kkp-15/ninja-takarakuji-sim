@@ -76,10 +76,12 @@
   </div>
   <div id="adStatus"></div>
   <div id="followButton">
-    <a href="https://twitter.com/kkp_webninja" target="_blank">
-      <button>🥷 私（@kkp_webninja）をフォロー</button>
-    </a>
-  </div>  <script>
+  <a href="https://twitter.com/kkp_webninja" target="_blank" style="text-decoration: none;">
+    <div style="display:inline-block; background:#1da1f2; color:white; padding:10px 20px; border-radius:30px; font-size:16px;">
+      X @kkp_webninja
+    </div>
+  </a>
+</div>  <script>
     let money = 1000000;
     let totalSpent = 0;
     let totalWon = 0;
@@ -156,17 +158,27 @@
       let result = '';
       for (let key in stats) {
         if (stats[key] > 0) {
-          result += `${key}：${stats[key]}回\n`;
+          result += `${key}：${stats[key]}回
+`;
         }
       }
       document.getElementById("result").textContent = result || 'まだ何も当たっていません';
-      document.getElementById("summary").textContent = `購入金額：${totalSpent}円\n当選金額：${totalWon}円\n損益：${totalWon - totalSpent}円`;
+      document.getElementById("summary").textContent = `購入金額：${totalSpent}円
+当選金額：${totalWon}円
+損益：${totalWon - totalSpent}円`;
+    }
 
-      let probText = '🎲 当選確率（参考）\n';
+    // 初期表示で確率も表示
+    window.onload = () => {
+      let probText = '🎲 当選確率（参考）
+';
       for (let key in probabilities) {
-        probText += `${key}：${probabilities[key]}\n`;
+        probText += `${key}：${probabilities[key]}
+`;
       }
       document.getElementById("probabilities").textContent = probText;
+      updateDisplay();
+    };
     }
 
     function resetAll() {
