@@ -110,7 +110,7 @@
 
       money -= cost;
       totalSpent += cost;
-      let resultText = `🎟 宝くじ ${count}枚購入！\n`;
+      let sessionResult = [];
       let sessionWin = 0;
 
       for (let i = 0; i < count; i++) {
@@ -123,9 +123,9 @@
         else if (rand < 0.05) prize = 3000;
 
         if (prize > 0) {
-          resultText += `🎉 ${i + 1}枚目：${prize.toLocaleString()}円当選！\n`;
+          sessionResult.push(`🎉 ${i + 1}枚目：${prize.toLocaleString()}円当選！`);
         } else {
-          resultText += `😢 ${i + 1}枚目：ハズレ\n`;
+          sessionResult.push(`😢 ${i + 1}枚目：ハズレ`);
         }
 
         sessionWin += prize;
@@ -137,8 +137,10 @@
       const profit = sessionWin - cost;
       const totalProfit = totalWon - totalSpent;
 
-      resultText += `\n💰 今回の損益：${profit >= 0 ? '+' : ''}${profit.toLocaleString()}円`;
-      resultText += `\n📊 累計損益：${totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString()}円`;
+      const resultText = `🎟 宝くじ ${count}枚購入！\n` +
+                         sessionResult.join("\n") +
+                         `\n\n💰 今回の損益：${profit >= 0 ? '+' : ''}${profit.toLocaleString()}円` +
+                         `\n📊 累計損益：${totalProfit >= 0 ? '+' : ''}${totalProfit.toLocaleString()}円`;
 
       resultDisplay.textContent = resultText;
       moneyDisplay.textContent = `所持金：${money.toLocaleString()}円`;
