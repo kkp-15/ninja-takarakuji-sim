@@ -36,7 +36,7 @@
       display: block;
       text-align: center;
     }
-    #result, #summary, #adStatus, #message, #probabilities, #shareButton {
+    #result, #summary, #adStatus, #message, #probabilities, #shareButton, #costDisplay {
       margin-top: 20px;
       white-space: pre-line;
     }
@@ -65,6 +65,7 @@
   <h1>宝くじで億万長者シミュレーター</h1>
   <p>所持金：<span id="money">1000000</span>円（上限：1,000,000円）</p>
   <input id="ticketInput" type="number" placeholder="くじの枚数（1枚300円）" min="1">
+  <div id="costDisplay"></div>
   <button onclick="drawLottery()">くじを引く（1回のみ）</button>
   <button onclick="resetAll()">リセット</button>
   <div id="message"></div>
@@ -76,12 +77,12 @@
   </div>
   <div id="adStatus"></div>
   <div id="followButton">
-  <a href="https://twitter.com/kkp_webninja" target="_blank" style="text-decoration: none;">
-    <div style="display:inline-block; background:#1da1f2; color:white; padding:10px 20px; border-radius:30px; font-size:16px;">
-      X @kkp_webninja
-    </div>
-  </a>
-</div>  <script>
+    <a href="https://twitter.com/kkp_webninja" target="_blank" style="text-decoration: none;">
+      <div style="display:inline-block; background:#1da1f2; color:white; padding:10px 20px; border-radius:30px; font-size:16px;">
+        X @kkp_webninja
+      </div>
+    </a>
+  </div>  <script>
     let money = 1000000;
     let totalSpent = 0;
     let totalWon = 0;
@@ -158,27 +159,11 @@
       let result = '';
       for (let key in stats) {
         if (stats[key] > 0) {
-          result += `${key}：${stats[key]}回
-`;
+          result += `${key}：${stats[key]}回\n`;
         }
       }
       document.getElementById("result").textContent = result || 'まだ何も当たっていません';
-      document.getElementById("summary").textContent = `購入金額：${totalSpent}円
-当選金額：${totalWon}円
-損益：${totalWon - totalSpent}円`;
-    }
-
-    // 初期表示で確率も表示
-    window.onload = () => {
-      let probText = '🎲 当選確率（参考）
-';
-      for (let key in probabilities) {
-        probText += `${key}：${probabilities[key]}
-`;
-      }
-      document.getElementById("probabilities").textContent = probText;
-      updateDisplay();
-    };
+      document.getElementById("summary").textContent = `購入金額：${totalSpent}円\n当選金額：${totalWon}円\n損益：${totalWon - totalSpent}円`;
     }
 
     function resetAll() {
@@ -192,6 +177,7 @@
       document.getElementById("message").textContent = '';
       document.getElementById("ticketInput").value = '';
       document.getElementById("shareButton").style.display = 'none';
+      document.getElementById("costDisplay").textContent = '';
     }
 
     function shareOnX() {
@@ -201,5 +187,24 @@
       const shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=宝くじシミュレーター`;
       window.open(shareUrl, '_blank');
     }
+
+    window.onload = () => {
+      let probText = '🎲 当選確率（参考）\n';
+      for (let key in probabilities) {
+        probText += `${key}：${probabilities[key]}\n`;
+      }
+      document.getElementById("probabilities").textContent = probText;
+      updateDisplay();
+    };
+
+    document.getElementById("ticketInput").addEventListener("input", () => {
+      const count = parseInt(document.getElementById("ticketInput").value);
+      const costDisplay = document.getElementById("costDisplay");
+      if (!isNaN(count) && count > 0) {
+        costDisplay.textContent = `購入金額：${count * 300}円`;
+      } else {
+        costDisplay.textContent = '';
+      }
+    });
   </script></body>
 </html>
